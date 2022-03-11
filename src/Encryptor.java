@@ -80,9 +80,15 @@ public class Encryptor
     {
         String result = "";
         int length = letterBlock.length * letterBlock[0].length;
-        for (int i = 0; i <= message.length() - length; i += length)
+        for (int i = 0; i <= message.length() - 1; i += length)
         {
-            fillBlock(message.substring(i, i + length));
+            if (message.length() - (i + length) > 0) {
+                fillBlock(message.substring(i, i + length));
+            }
+            else
+            {
+                fillBlock(message.substring(i));
+            }
             result += encryptBlock();
         }
         return result;
@@ -112,7 +118,60 @@ public class Encryptor
      */
     public String decryptMessage(String encryptedMessage)
     {
-        /* to be implemented in part (d) */
-        return "";
+        String result = "";
+        int length = letterBlock.length * letterBlock[0].length;
+        for (int i = 0; i < encryptedMessage.length(); i+=length)
+        {
+            result += decryptBlock(encryptedMessage.substring(i, i + length));
+        }
+        boolean notA = true;
+        int last = result.length();
+        for(int j = result.length() - 1; j >= 0 && notA; j--)
+        {
+            if (!result.substring(j, j + 1).equals("A"))
+            {
+                last = j;
+                notA = false;
+            }
+        }
+        result = result.substring(0, last + 1);
+
+        return result;
+    }
+
+    /** Decrypts string from letterBlock by extracting in column-major order and returning in row-major order
+     *
+     *   Precondition: letterBlock has been filled
+     *
+     * @param encryptedBlock the decrypted string
+     *
+     *   @return the encrypted string from letterBlock
+     */
+    public String decryptBlock(String encryptedBlock)
+    {
+        String[][] temp = new String[letterBlock.length][letterBlock[0].length];
+        int length = letterBlock.length * letterBlock[0].length;
+        int index = 0;
+        String result = "";
+        for (int col = 0; col < letterBlock[0].length; col++)
+        {
+            for (int row = 0; row < letterBlock.length; row++)
+            {
+                if (index < length)
+                {
+                    temp[row][col] = encryptedBlock.substring(index, index + 1);
+                    index++;
+                }
+            }
+        }
+        for (String[] row : temp)
+        {
+            for (String col : row)
+            {
+                result += col;
+            }
+        }
+        //System.out.println(result);
+        return result;
     }
 }
